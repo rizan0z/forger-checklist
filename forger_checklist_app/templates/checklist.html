@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trading Checklist - Forger Trades</title>
+      
+    <style>
+        body { background: #1a1a1a; color: #f0f0f0; font-family: 'Inter', sans-serif; padding: 0; margin: 0;}
+        .container { max-width: 520px; margin: 28px auto; padding: 20px; background: #232323; border-radius: 10px;}
+        h1 { letter-spacing: 1px; color: #ffc04b; font-size: 2em; margin-bottom: 10px;}
+        h2 { color: #ffc04b; margin-top: 28px; font-size: 1.07em; }
+        ul { list-style: none; padding-left: 0; }
+        li { margin-bottom: 9px; font-size: 1em; }
+        input[type="checkbox"] { accent-color: #ffc04b; width: 18px; height: 18px; margin-right: 7px; }
+        .username { font-size: 0.96em; color: #ffecba; }
+        .logout { color: #efcc79; float: right; text-decoration: none; }
+        .logout:hover { text-decoration: underline; }
+        .footer { font-size: 0.97em; color: #b1bdc9; margin: 32px 0 0 0; text-align: center;}
+    </style>
+    <script>
+        // Save/restore checklist state in local storage, per user
+        function key() {
+            return "forgerChecklist_" + "{{username}}"
+        }
+        function saveChecklist() {
+            const checks = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach(inp=>{
+                checks[inp.id] = inp.checked;
+            });
+            localStorage.setItem(key(), JSON.stringify(checks));
+        }
+        function restoreChecklist() {
+            const checks = JSON.parse(localStorage.getItem(key()) || '{}');
+            for(let id in checks) {
+                let inp = document.getElementById(id);
+                if(inp) inp.checked = checks[id];
+            }
+        }
+        window.onload = function() {
+            restoreChecklist();
+            document.querySelectorAll('input[type="checkbox"]').forEach(inp=>{
+                inp.addEventListener("change", saveChecklist);
+            });
+        }
+        function resetChecklist() {
+            if(confirm('Uncheck all boxes?')) {
+                document.querySelectorAll('input[type="checkbox"]').forEach(inp=>{inp.checked=false});
+                saveChecklist();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <a class="logout" href="{{ url_for('logout') }}">Logout</a>
+        <h1>FORGER TRADES</h1>
+        <div class="username">Logged in as <strong>{{username}}</strong></div>
+        <div style="color:#d0b481; font-size:0.95em; margin-bottom:12px;">
+(90% successful trader would ask these questions to themselves evryday to keep them discipline and if they cant answer the questions they skip the trade and wait for better trade or day which keeps them profitable)
+</div>
+
+        {% for section, items in checklist.items() %}
+            <h2>{{ section }}</h2>
+            <ul>
+                {% for item in items %}
+                    <li>
+                        <label>
+                            <input type="checkbox" id="{{ section|replace(' ','_') }}_{{ loop.index }}">
+                            {{ item }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        <button onclick="resetChecklist()" style="margin:17px 0 0 0; padding:5px 18px; background:#ffc04b; color:#222; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Reset All</button>
+        <div class="footer">
+            <p>if you follow this rules and reviewed evryday and became discipline there is no doubt you’re gonna be successful 100% always make sure to review it for each trades you take don’t ever stop looking at this repeat it every single day and evry single trade and i will guarantee your success<br>
+            Instagram:
+<a href="https://www.instagram.com/forger.fx?igsh=MWc0cnFyZWIwdXZ4eQ%3D%3D&utm_source=qr" target="_blank" style="color:#59effd; text-decoration:underline; font-weight:bold;">
+  @forger.fx
+</a>
+</p>
+        </div>
+    </div>
+</body>
+</html>
